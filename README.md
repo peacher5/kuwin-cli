@@ -1,8 +1,6 @@
 # KUWiN CLI
 A command-line tool for login/logout Kasetsart University Wireless Network (KUWiN)
 
-**Status: Testing (I'll will release it in several days.)**
-
 ## Introduction
 It uses the same protocol as the [KUWiN Tools](https://play.google.com/store/apps/details?id=th.ac.ku.kuwintools) (Official App on Android) that's no CAPTCHA required for authentication. You can use this tool when you're in KU Network only. (Wifi, LAN, VPN, or whatever)
 
