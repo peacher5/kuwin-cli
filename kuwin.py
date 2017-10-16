@@ -1,26 +1,36 @@
 from random import randint
 from urllib import parse, request
-import sys
+from sys import argv
 
 def print_usage():
     print("\n  - KUWiN CLI -\n\n" +
-            "     Usage:  %s <action> <username> <password>\n\n" % sys.argv[0] +
+            "     Usage:  %s <action> <username> <password>\n\n" % argv[0] +
             "   Actions:  list        --  See all of your login sessions.\n" +
             "             login       --  Login to KU Network.\n" +
             "             logout      --  Logout from KU Network.\n" +
             "             logout-all  --  Logout from all sessions.\n\n" +
-            "   Example:  %s login b6010987654 mypassword" % sys.argv[0])
+            "   Example:  %s login b6010987654 mypassword" % argv[0])
 
 def sessions_table(session_list):
-    table = "   +---------------------+---------------------------+\n" + \
-            "   |      IP Address     |      Login Date/Time      |\n" + \
-            "   |---------------------+---------------------------|\n"
+    formatted_session_dict = {}
+
     for session_line in session_list:
         session_info = session_line.split('\t')
         timestamp = session_info[1].split()
         date_time = timestamp[2] + " " + timestamp[1] + " " + timestamp[5] + ", " + timestamp[3]
-        table += "   |   %15s   |   %21s   |\n" % (session_info[0].center(15), date_time)
-    table += "   +---------------------+---------------------------+"
+        formatted_session_dict.update({session_info[0]:date_time})
+
+    ip_spaces = max(map(len, formatted_session_dict.keys())) + 6
+
+    table_sep = "   +" + "-" * ip_spaces + "+---------------------------+"
+    ip_topic = "IP Address".center(ip_spaces)
+    date_topic = "Login Date/Time".center(27)
+    table = table_sep + "\n   |" + ip_topic + "|" + date_topic + "|\n" + table_sep
+
+    for ip, date_time in formatted_session_dict.items():
+        table += "\n   |%s|   %21s   |" % (ip.center(ip_spaces), date_time)
+
+    table += "\n" + table_sep
     return table
 
 def run(action, user, password):
@@ -31,7 +41,7 @@ def run(action, user, password):
     # idk how to get link speed on all OS. so..
     SPEED = str(randint(120,160)) + ' Mbps'
 
-    headers = {'User-Agent': '', 'Content-Type': 'application/x-www-form-urlencoded'}
+    headers = {'User-Agent': ''}
 
     if action == 'logout-all':
         action = 'logoutuser'
@@ -72,19 +82,19 @@ def run(action, user, password):
         print("\n   Your username & password is incorrect.")
 
     else:
-        # In case they update API..
-        print("Unknown response from server:\n")
+        # In case they update API.
+        print("\n   Unknown response from server:\n")
         print(data_response)
 
 def init():
     action_list = ['list', 'login', 'logout', 'logout-all']
-    arg_size = len(sys.argv)
+    arg_size = len(argv)
     if arg_size > 1:
-        action = sys.argv[1]
+        action = argv[1]
         if action in action_list:
             if arg_size == 4:
-                user = sys.argv[2]
-                password = sys.argv[3]
+                user = argv[2]
+                password = argv[3]
                 run(action, user, password)
                 return
             if arg_size < 4:
